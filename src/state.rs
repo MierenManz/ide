@@ -1,19 +1,21 @@
+use winit::dpi::PhysicalPosition;
 use winit::dpi::PhysicalSize;
 use winit::event::WindowEvent;
 use winit::window::Window;
 
-pub struct State {
+pub struct WindowState {
     surface: wgpu::Surface,
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
     size: PhysicalSize<u32>,
+    mouse: PhysicalPosition<u32>,
+    // widgets: Widget<T>,
 }
 
-impl State {
+impl WindowState {
     pub async fn new(window: &Window) -> Self {
         let size = window.inner_size();
-
         let instance = wgpu::Instance::new(wgpu::Backends::VULKAN);
         let surface = unsafe { instance.create_surface(window) };
         let adapter_options = wgpu::RequestAdapterOptions {
@@ -44,12 +46,14 @@ impl State {
         };
 
         surface.configure(&device, &config);
+
         Self {
             surface,
             device,
             queue,
             config,
             size,
+            mouse: PhysicalPosition { x: 0, y: 0 },
         }
     }
 
@@ -102,11 +106,12 @@ impl State {
                 }],
                 depth_stencil_attachment: None,
             });
-            println!("{:#?}", render_pass);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
         Ok(())
     }
+
+    pub fn run()
 }
